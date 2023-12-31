@@ -64,7 +64,7 @@ const githubProgressApi = async (req: NextApiRequest, res: NextApiResponse) => {
       percentage = Math.round((commitCount / targetCommitCount) * 100);
 
     return res.status(200).setHeader("Content-Type", "image/svg+xml")
-      .send(`<svg width="300" height="25" xmlns="http://www.w3.org/2000/svg">
+      .send(`<svg width="450" height="25" xmlns="http://www.w3.org/2000/svg">
       <rect width="100%" height="100%" fill="#eee" />
       <rect width="${percentage}%" height="100%" fill="#f5dd42" />
       <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="#000">
