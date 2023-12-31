@@ -61,9 +61,16 @@ const githubProgressApi = async (req: NextApiRequest, res: NextApiResponse) => {
     );
 
     const targetCommitCount = parseInt(target as string, 10),
-      progress = Math.round((commitCount / targetCommitCount) * 100);
+      percentage = Math.round((commitCount / targetCommitCount) * 100);
 
-    res.status(200).json({ commitCount, progress });
+    return res.status(200).setHeader("Content-Type", "image/svg+xml")
+      .send(`<svg width="150" height="30" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100%" height="100%" fill="#eee" />
+      <rect width="${percentage}%" height="100%" fill="#f5dd42" />
+      <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="#000">
+        ${percentage}%
+      </text>
+    </svg>`);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
