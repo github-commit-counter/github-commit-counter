@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import fetch from "node-fetch";
+import fs from "fs";
 
 /**
  * Get user total commit count with profile crawler
@@ -14,7 +15,12 @@ async function getUserTotalCommitCount(
   year: number
 ): Promise<number> {
   const userProfileHtml = await fetch(
-    `https://github.com/${username}?tab=overview&from=${year}-01-01&to=${year}-12-31`
+    `https://github.com/${username}?tab=contributions&from=${year}-01-01&to=${year}-12-31`,
+    {
+      headers: {
+        "x-requested-with": "XMLHttpRequest",
+      },
+    }
   );
 
   if (userProfileHtml.status === 404) {
@@ -24,10 +30,11 @@ async function getUserTotalCommitCount(
   let userProfileHtmlText: string = await userProfileHtml.text();
 
   userProfileHtmlText = userProfileHtmlText
-    .replaceAll("\n", "")
-    .replaceAll("\t", "")
-    .replaceAll("  ", " ")
-    .replaceAll("\r", "");
+    .replace(/[\n\t\r]+| {2,}/g, " ")
+    .trim();
+
+  // save into file, for debugging
+  // fs.writeFileSync("user-profile.html", userProfileHtmlText);
 
   const commitCountMatches = userProfileHtmlText.match(
     /([0-9,]+)[ ]+contributions[ ]+in[ ]+([0-9]{4})/i
