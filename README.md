@@ -1,4 +1,10 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# github commit counter
+
+This is a simple project that counts the number of commits made by a user in a github repository with the help of the basic Github crawler (yes, we don't need API key etc). Then it displays the number of commits made by the user in a year and the percentage of the target commits made by the user in that year with SVG format.
+
+## Use Case
+
+You can display in your github profile the commit progress with target commit count for a year.
 
 ## Getting Started
 
@@ -14,23 +20,13 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Endpoint
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`https://{YOUR_VERCEL_APP}.vercel.app/api/github-progress?username={YOUR_GITHUB_USERNAME}&year={TARGET_YEAR}&target={TARGET_COMMIT_COUNT}`
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Example
+`![2024 Goals (Commits)](https://github-commit-counter.vercel.app/api/github-progress?username=relliv&year=2024&target=15000)`
 
-## Learn More
+## Preview
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+![2024 Goals (Commits)](https://github-commit-counter.vercel.app/api/github-progress?username=relliv&year=2024&target=15000)
