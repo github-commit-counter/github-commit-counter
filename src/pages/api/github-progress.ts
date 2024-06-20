@@ -17,16 +17,17 @@ const cache = flatCache.load("crawlerCache", path.resolve("cache")),
  */
 async function getUserTotalCommitCount(
   username: string,
-  year: number
+  year: number,
+  targetCommitCount: number
 ): Promise<number> {
   const url = `https://github.com/${username}?tab=contributions&from=${year}-01-01&to=${year}-12-31`;
 
   const now = Date.now(),
-    cacheKey = url,
+    cacheKey = `${url}-${targetCommitCount}`,
     cachedData = cache.getKey(cacheKey);
 
   if (cachedData && now - cachedData.timestamp < ttl) {
-    return Number(cachedData.commitCount);
+    return cachedData.commitCount;
   }
 
   const userProfileHtml = await fetch(url, {
@@ -36,7 +37,7 @@ async function getUserTotalCommitCount(
   });
 
   if (userProfileHtml.status === 404) {
-    throw new Error("User not found");
+    return -1;
   }
 
   let userProfileHtmlText: string = await userProfileHtml.text();
@@ -46,7 +47,7 @@ async function getUserTotalCommitCount(
     .trim();
 
   // save into file, for debugging
-  // fs.writeFileSync("user-profile.html", userProfileHtmlText);
+  fs.writeFileSync("user-profile.html", userProfileHtmlText);
 
   const commitCountMatches = userProfileHtmlText.match(
     /([0-9,]+)[ ]+contributions[ ]+in[ ]+([0-9]{4})/i
@@ -56,12 +57,12 @@ async function getUserTotalCommitCount(
     throw new Error("User profile html text not match.");
   }
 
-  const commitCount = commitCountMatches[1].replaceAll(",", "");
+  const commitCount = Number(commitCountMatches[1].replaceAll(",", ""));
 
   cache.setKey(cacheKey, { timestamp: now, commitCount });
   cache.save(true);
 
-  return Number(commitCount);
+  return commitCount;
 }
 
 /**
@@ -79,12 +80,25 @@ const githubProgressApi = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const commitCount = await getUserTotalCommitCount(
       username as string,
-      parseInt(year as string, 10)
+      Number(year),
+      Number(target)
     );
 
-    const targetCommitCount = parseInt(target as string, 10),
+    if (commitCount === -1) {
+      return res.status(200).setHeader("Content-Type", "image/svg+xml")
+        .send(`<svg width="450" height="25" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#eee" />
+        <rect width="100%" height="100%" fill="#fc0341" />
+        <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="#fff">
+          user not found
+        </text>
+      </svg>`);
+    }
+
+    const targetCommitCount = Number(target),
       percentage = Math.round((commitCount / targetCommitCount) * 100);
 
+    // see all supported content types: https://github.com/atmos/camo/blob/master/mime-types.json
     return res.status(200).setHeader("Content-Type", "image/svg+xml")
       .send(`<svg width="450" height="25" xmlns="http://www.w3.org/2000/svg">
       <rect width="100%" height="100%" fill="#eee" />
@@ -94,7 +108,14 @@ const githubProgressApi = async (req: NextApiRequest, res: NextApiResponse) => {
       </text>
     </svg>`);
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return res.status(200).setHeader("Content-Type", "image/svg+xml")
+      .send(`<svg width="450" height="25" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#eee" />
+        <rect width="100%" height="100%" fill="#fc0341" />
+        <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="#fff">
+          server error
+        </text>
+      </svg>`);
   }
 };
 

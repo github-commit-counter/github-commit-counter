@@ -20,9 +20,13 @@ pnpm dev
 bun dev
 ```
 
-## Endpoint
+## Endpoints
 
+Vercel Version:
 `https://{YOUR_VERCEL_APP}.vercel.app/api/github-progress?username={YOUR_GITHUB_USERNAME}&year={TARGET_YEAR}&target={TARGET_COMMIT_COUNT}`
+
+Local Version:
+`http://localhost:3000/api/github-progress?username={YOUR_GITHUB_USERNAME}&year={TARGET_YEAR}&target={TARGET_COMMIT_COUNT}`
 
 ## Example
 `![2024 Goals (Commits)](https://github-commit-counter.vercel.app/api/github-progress?username=relliv&year=2024&target=15000)`
