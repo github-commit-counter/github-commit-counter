@@ -26,7 +26,7 @@ async function getUserTotalCommitCount(
     cachedData = cache.getKey(cacheKey);
 
   if (cachedData && now - cachedData.timestamp < ttl) {
-    return cachedData.commitCount;
+    return Number(cachedData.commitCount);
   }
 
   const userProfileHtml = await fetch(url, {
@@ -61,7 +61,7 @@ async function getUserTotalCommitCount(
   cache.setKey(cacheKey, { timestamp: now, commitCount });
   cache.save(true);
 
-  return parseInt(commitCount, 10);
+  return Number(commitCount);
 }
 
 /**
