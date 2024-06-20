@@ -1,6 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import fetch from "node-fetch";
+import flatCache from "flat-cache";
+import path from "path";
 import fs from "fs";
+
+const cache = flatCache.load("crawlerCache", path.resolve("cache")),
+  ttl = 6 * 3600 * 1000; // 6 hour
 
 /**
  * Get user total commit count with profile crawler
@@ -14,14 +19,21 @@ async function getUserTotalCommitCount(
   username: string,
   year: number
 ): Promise<number> {
-  const userProfileHtml = await fetch(
-    `https://github.com/${username}?tab=contributions&from=${year}-01-01&to=${year}-12-31`,
-    {
-      headers: {
-        "x-requested-with": "XMLHttpRequest",
-      },
-    }
-  );
+  const url = `https://github.com/${username}?tab=contributions&from=${year}-01-01&to=${year}-12-31`;
+
+  const now = Date.now(),
+    cacheKey = url,
+    cachedData = cache.getKey(cacheKey);
+
+  if (cachedData && now - cachedData.timestamp < ttl) {
+    return cachedData.commitCount;
+  }
+
+  const userProfileHtml = await fetch(url, {
+    headers: {
+      "x-requested-with": "XMLHttpRequest",
+    },
+  });
 
   if (userProfileHtml.status === 404) {
     throw new Error("User not found");
@@ -45,6 +57,9 @@ async function getUserTotalCommitCount(
   }
 
   const commitCount = commitCountMatches[1].replaceAll(",", "");
+
+  cache.setKey(cacheKey, { timestamp: now, commitCount });
+  cache.save(true);
 
   return parseInt(commitCount, 10);
 }
