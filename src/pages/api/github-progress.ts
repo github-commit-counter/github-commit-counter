@@ -43,7 +43,7 @@ async function getUserTotalCommitCount(
 }
 
 /**
- * Github commit progress api
+ * Github commit progress api endpoint
  */
 const githubProgressApi = async (req: NextApiRequest, res: NextApiResponse) => {
   const { username, year, target } = req.query;
