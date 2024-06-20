@@ -12,7 +12,7 @@ import fetch from "node-fetch";
 async function getUserTotalCommitCount(
   username: string,
   year: number
-): Promise<any> {
+): Promise<number> {
   const userProfileHtml = await fetch(
     `https://github.com/${username}?tab=overview&from=${year}-01-01&to=${year}-12-31`
   );
