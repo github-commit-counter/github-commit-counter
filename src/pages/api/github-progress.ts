@@ -47,10 +47,10 @@ async function getUserTotalCommitCount(
     .trim();
 
   // if local development, save into file, for debugging
-  if (process.env.NODE_ENV === "development") {
-    // save into file, for debugging
-    fs.writeFileSync("user-profile.html", userProfileHtmlText);
-  }
+  // if (process.env.NODE_ENV === "development") {
+  //   // save into file, for debugging
+  //   fs.writeFileSync("user-profile.html", userProfileHtmlText);
+  // }
 
   const commitCountMatches = userProfileHtmlText.match(
     /([0-9,]+)[ ]+contributions[ ]+in[ ]+([0-9]{4})/i
