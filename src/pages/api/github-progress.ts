@@ -116,7 +116,7 @@ const githubProgressApi = async (req: NextApiRequest, res: NextApiResponse) => {
         <rect width="100%" height="100%" fill="#eee" />
         <rect width="100%" height="100%" fill="#fc0341" />
         <text x="50%" y="50%" fill="#fff">
-          ${error.message || "Server Error"}
+          ${JSON.stringify(error) || "Server Error"}
         </text>
       </svg>`);
   }
