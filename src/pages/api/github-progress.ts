@@ -4,7 +4,7 @@ import flatCache from "flat-cache";
 import path from "path";
 import fs from "fs";
 
-const cachePath = path.resolve("cache");
+const cachePath = path.join(process.cwd(), "cache");
 
 if (!fs.existsSync(cachePath)) {
   fs.mkdirSync(cachePath, { recursive: true });
