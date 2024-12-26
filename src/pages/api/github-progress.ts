@@ -4,7 +4,13 @@ import flatCache from "flat-cache";
 import path from "path";
 import fs from "fs";
 
-const cache = flatCache.load("crawlerCache", path.resolve("cache")),
+const cachePath = path.resolve("cache");
+
+if (!fs.existsSync(cachePath)) {
+  fs.mkdirSync(cachePath, { recursive: true });
+}
+
+const cache = flatCache.load("crawlerCache", cachePath),
   ttl = 6 * 3600 * 1000; // 6 hour
 
 /**
